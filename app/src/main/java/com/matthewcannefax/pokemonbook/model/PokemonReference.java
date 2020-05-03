@@ -9,10 +9,7 @@ public class PokemonReference {
 
     @Override
     public String toString() {
-        return "PokemonReference{" +
-                "name='" + name + '\'' +
-                ", id=" + id +
-                '}';
+        return String.format("%s %s", id, name);
     }
 
     public String getName() {

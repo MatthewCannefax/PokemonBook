@@ -8,9 +8,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import me.sargunvohra.lib.pokekotlin.client.PokeApi;
@@ -38,9 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     Context mContext;
 
-    private Button apiButton;
-    private EditText etPokeName;
-
+    private Spinner pokeSpinner;
     private ImageView ivPokemonSprite;
 
     private TextView tvPokemonName;
@@ -56,8 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         mContext = this;
 
-        apiButton = findViewById(R.id.getApiCallBTN);
-        etPokeName = findViewById(R.id.etPokeName);
+        pokeSpinner = findViewById(R.id.pokeSpinner);
 
         ivPokemonSprite = findViewById(R.id.ivPokemonSprite);
 
@@ -67,12 +68,14 @@ public class MainActivity extends AppCompatActivity {
         tvPokemonInformation = findViewById(R.id.tvPokemonInformation);
 
 
-        apiButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        new fillComboBox().execute();
 
+        pokeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    int id = Integer.parseInt(etPokeName.getText().toString());
+                    PokemonReference pokemonReference = (PokemonReference)pokeSpinner.getSelectedItem();
+                    int id = pokemonReference.getId();
                     if (id <= 807 && id > 0) {
                         new HttpReqTask().execute();
                     } else {
@@ -83,6 +86,10 @@ public class MainActivity extends AppCompatActivity {
                 }catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
@@ -98,13 +105,15 @@ public class MainActivity extends AppCompatActivity {
         protected Pokemon doInBackground(Void... voids) {
 
             try {
-                String apiUrl = String.format("https://pokeapi.co/api/v2/pokemon/%s", etPokeName.getText().toString().toLowerCase());
+                PokemonReference pokemonReference = (PokemonReference)pokeSpinner.getSelectedItem();
+                int id = pokemonReference.getId();
+                String apiUrl = String.format("https://pokeapi.co/api/v2/pokemon/%s", id);
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 Pokemon pokemon = restTemplate.getForObject(apiUrl, Pokemon.class);
 
                 PokeApi pokeApi = new PokeApiClient();
-                PokemonSpecies species = pokeApi.getPokemonSpecies(Integer.parseInt(etPokeName.getText().toString()));
+                PokemonSpecies species = pokeApi.getPokemonSpecies(id);
 
                 pokemon.setName(species.getName());
 
@@ -156,9 +165,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected List<PokemonReference> doInBackground(Void... voids) {
             PokeApi pokeApi = new PokeApiClient();
-            NamedApiResourceList list = pokeApi.getPokemonSpeciesList(0, 807);//use this to populate a dropdown box
+            List<NamedApiResource> list = pokeApi.getPokemonSpeciesList(0, 807).getResults();//use this to populate a dropdown box
+            List<PokemonReference> pokemonReferences = new ArrayList<>();
 
-            return null;
+            for(NamedApiResource resource : list){
+                PokemonReference reference = new PokemonReference();
+                reference.setId(resource.getId());
+                reference.setName(resource.getName());
+                pokemonReferences.add(reference);
+            }
+
+            return pokemonReferences;
 
         }
 
@@ -166,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<PokemonReference> pokemonReferences) {
             super.onPostExecute(pokemonReferences);
 
-
+            pokeSpinner.setAdapter(new ArrayAdapter<PokemonReference>(mContext, R.layout.support_simple_spinner_dropdown_item, pokemonReferences));
         }
     }
 

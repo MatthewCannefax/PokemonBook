@@ -15,22 +15,11 @@
         android:orientation="horizontal"
         android:layout_margin="5dp"
         android:padding="5dp">
-        <Button
-            android:id="@+id/getApiCallBTN"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/call_api"
-            />
 
-        <EditText
-            android:id="@+id/etPokeName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:ems="10"
-            android:hint="@string/pokemon_id"
-            android:inputType="number"/>
+        <Spinner
+            android:id="@+id/pokeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
     <ScrollView
