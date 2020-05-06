@@ -17,7 +17,11 @@ public class PokemonReference {
     }
 
     public void setName(String name) {
-        this.name = name;
+        String newName = name.replaceFirst(
+                name.substring(0,1),
+                name.substring(0, 1).toUpperCase()
+        );
+        this.name = newName;
     }
 
     public int getId() {
