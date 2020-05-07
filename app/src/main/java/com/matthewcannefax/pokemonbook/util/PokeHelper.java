@@ -9,6 +9,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ public class PokeHelper {
             //set the name from the sdk
             pokemon.setName(species.getName());
 
+            pokemon.setSpriteUrl(pokemon.getSprite().getUrl());
+
             //set the id from sdk
             pokemon.setId(species.getId());
 
@@ -63,9 +66,10 @@ public class PokeHelper {
 
             //make sure the sprite url is on null and set it
             if(pokemon.getSprite().getUrl() != null){
-                InputStream inputStream = (InputStream) new URL(pokemon.getSprite().getUrl()).getContent();
-                Drawable d = Drawable.createFromStream(inputStream, "srcName");
-                pokemon.setDrawable(d);
+                 setPokemonDrawable(pokemon);
+//                InputStream inputStream = (InputStream) new URL(pokemon.getSprite().getUrl()).getContent();
+//                Drawable d = Drawable.createFromStream(inputStream, "srcName");
+//                pokemon.setDrawable(d);
             }
             return pokemon;
         } catch (RestClientException e) {
@@ -74,6 +78,12 @@ public class PokeHelper {
         }catch (Exception e){
             return null;
         }
+    }
+
+    public static void setPokemonDrawable(Pokemon pokemon) throws IOException {
+        InputStream inputStream = (InputStream) new URL(pokemon.getSprite().getUrl()).getContent();
+        Drawable d = Drawable.createFromStream(inputStream, "srcName");
+        pokemon.setDrawable(d);
     }
 
     public static List<PokemonReference> getListOfPokemon(){

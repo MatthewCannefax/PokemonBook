@@ -45,6 +45,9 @@ public class Pokemon {
     @JsonProperty("sprites")
     private Sprite sprite;
 
+    @ColumnInfo(name = "sprite_url")
+    private String spriteUrl;
+
     @ColumnInfo(name = "type_string")
     private String typeString;
 
@@ -54,6 +57,18 @@ public class Pokemon {
     @ColumnInfo(name = "height")
     @JsonProperty("height")
     private Integer height;
+
+    public String getSpriteUrl() {
+        return sprite.getUrl();
+    }
+
+    public void setSpriteUrl(String spriteUrl) {
+        this.spriteUrl = spriteUrl;
+        if(sprite == null){
+            sprite = new Sprite();
+        }
+        this.sprite.setUrl(spriteUrl);
+    }
 
     public int getId() {
         return id;

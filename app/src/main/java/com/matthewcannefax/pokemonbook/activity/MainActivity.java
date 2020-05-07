@@ -27,6 +27,7 @@ import com.matthewcannefax.pokemonbook.util.PokeHelper;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -76,17 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
         mPokemonViewModel = new PokemonViewModel(getApplication());
 
-        mPokemonViewModel.deleteAll();
-
-        mPokemonViewModel.getmAllPokemon().observe(this, new Observer<List<Pokemon>>() {
-            @Override
-            public void onChanged(List<Pokemon> pokemons) {
-                if (pokemons.size() > 0) {
-                    Toast.makeText(mContext, pokemons.get(pokemons.size() - 1) + " added to db", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
         new fillComboBox().execute();
 
         pokeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -129,6 +119,13 @@ public class MainActivity extends AppCompatActivity {
                 exists = false;
                 if(pokemon != null){
                     exists = true;
+                    if(pokemon.getDrawable() == null){
+                        try {
+                            PokeHelper.setPokemonDrawable(pokemon);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     return pokemon;
                 }
                 return PokeHelper.getPokemonById(id);

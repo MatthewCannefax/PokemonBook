@@ -14,7 +14,7 @@ import com.matthewcannefax.pokemonbook.model.Pokemon;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Pokemon.class}, version = 1, exportSchema = false)
+@Database(entities = {Pokemon.class}, version = 2, exportSchema = false)
 public abstract class PokemonRoomDatabase extends RoomDatabase {
 
     public abstract PokemonDao pokemonDao();
@@ -30,6 +30,7 @@ public abstract class PokemonRoomDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             PokemonRoomDatabase.class, "pokemon_database")
                             .addCallback(sRoomDatabaseCallback)
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
