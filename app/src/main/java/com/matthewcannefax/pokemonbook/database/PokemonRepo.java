@@ -22,9 +22,19 @@ public class PokemonRepo {
         return mAllPokemon;
     }
 
+    List<Pokemon> getFavorites(){
+        return mPokemonDao.getFavoritePokemon();
+    }
+
     void insert(Pokemon pokemon){
         PokemonRoomDatabase.databaseWriteExecutor.execute(() -> {
             mPokemonDao.insert(pokemon);
+        });
+    }
+
+    void update(Pokemon pokemon){
+        PokemonRoomDatabase.databaseWriteExecutor.execute(() -> {
+            mPokemonDao.update(pokemon);
         });
     }
 

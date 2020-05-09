@@ -42,6 +42,8 @@ public class PokeHelper {
             //set the name from the sdk
             pokemon.setName(species.getName());
 
+            pokemon.setGeneration(species.getGeneration().getId());
+
             pokemon.setSpriteUrl(pokemon.getSprite().getUrl());
 
             //set the id from sdk

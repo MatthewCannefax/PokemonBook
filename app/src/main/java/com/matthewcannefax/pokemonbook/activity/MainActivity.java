@@ -1,6 +1,7 @@
 package com.matthewcannefax.pokemonbook.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.matthewcannefax.pokemonbook.R;
 import com.matthewcannefax.pokemonbook.database.PokemonViewModel;
 import com.matthewcannefax.pokemonbook.model.Pokemon;
+import com.matthewcannefax.pokemonbook.model.PokemonGen;
 import com.matthewcannefax.pokemonbook.model.PokemonReference;
 import com.matthewcannefax.pokemonbook.util.PokeHelper;
 
@@ -46,7 +48,10 @@ public class MainActivity extends AppCompatActivity {
 
     Context mContext;
 
+    private Spinner categorySpinner;
     private Spinner pokeSpinner;
+
+    private ImageView ivPokemonFavorite;
     private ImageView ivPokemonSprite;
 
     private TextView tvPokemonName;
@@ -55,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvPokemonInformation;
 
     private PokemonViewModel mPokemonViewModel;
+
+    private Pokemon currentPokemon;
 
     //testing only
     private boolean exists = false;
@@ -66,8 +73,10 @@ public class MainActivity extends AppCompatActivity {
 
         mContext = this;
 
+        categorySpinner = findViewById(R.id.categorySpinner);
         pokeSpinner = findViewById(R.id.pokeSpinner);
 
+        ivPokemonFavorite = findViewById(R.id.ivPokemonFavorite);
         ivPokemonSprite = findViewById(R.id.ivPokemonSprite);
 
         tvPokemonName = findViewById(R.id.tvPokemonName);
@@ -77,7 +86,37 @@ public class MainActivity extends AppCompatActivity {
 
         mPokemonViewModel = new PokemonViewModel(getApplication());
 
-        new fillComboBox().execute();
+        ArrayAdapter catAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, PokemonGen.values());
+        categorySpinner.setAdapter(catAdapter);
+
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                PokemonGen gen = (PokemonGen)categorySpinner.getSelectedItem();
+                new fillComboBox(gen.getPosition()).execute();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
+
+        ivPokemonFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentPokemon.setFavorite(!currentPokemon.isFavorite());
+                if(currentPokemon.isFavorite()){
+                    ivPokemonFavorite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_star_filled));
+                }else{
+                    ivPokemonFavorite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_star_empty));
+                }
+
+                mPokemonViewModel.update(currentPokemon);
+            }
+        });
 
         pokeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -135,6 +174,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Pokemon pokemon) {
             super.onPostExecute(pokemon);
 
+            currentPokemon = pokemon;
+
             if (!exists) {
                 mPokemonViewModel.insert(pokemon);
             }
@@ -145,14 +186,40 @@ public class MainActivity extends AppCompatActivity {
             tvPokemonInformation.setText(pokemon.getInformation());
             tvPokemonType.setText(pokemon.getTypeString());
             ivPokemonSprite.setImageDrawable(pokemon.getDrawable());
+
+            if(pokemon.isFavorite()){
+                ivPokemonFavorite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_star_filled));
+            }else{
+                ivPokemonFavorite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_star_empty));
+            }
         }
     }
 
     private class fillComboBox extends AsyncTask<Void, Void, List<PokemonReference>> {
 
+        fillComboBox(){}
+
+        fillComboBox(int categoryPosition){
+            this.position = categoryPosition;
+        }
+
+        private int position = 0;
+
         @Override
         protected List<PokemonReference> doInBackground(Void... voids) {
-            return PokeHelper.getListOfPokemon();
+
+            if(position == 0){
+                return PokeHelper.getListOfPokemon();
+            }else{
+                List<PokemonReference> references = new ArrayList<>();
+                List<Pokemon> pokemonList = mPokemonViewModel.getFavoritePokemon();
+                for(Pokemon p : pokemonList){
+                    references.add(new PokemonReference(p.getId(), p.getName()));
+                }
+                return references;
+            }
+
+
         }
 
         @Override
@@ -162,6 +229,8 @@ public class MainActivity extends AppCompatActivity {
             pokeSpinner.setAdapter(new ArrayAdapter<PokemonReference>(mContext, R.layout.support_simple_spinner_dropdown_item, pokemonReferences));
         }
     }
+
+
 
 
 }

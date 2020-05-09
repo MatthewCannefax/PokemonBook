@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.matthewcannefax.pokemonbook.model.Pokemon;
 
@@ -16,6 +17,9 @@ public interface PokemonDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     void insert(Pokemon pokemon);
 
+    @Update
+    void update(Pokemon pokemon);
+
     @Query("DELETE FROM pokemon_table")
     void deleteAll();
 
@@ -24,5 +28,8 @@ public interface PokemonDao {
 
     @Query("SELECT * FROM pokemon_table WHERE pokemon_id =:id")
     Pokemon getPokemonById(int id);
+
+    @Query("SELECT * FROM pokemon_table WHERE favorite = 1")
+    List<Pokemon> getFavoritePokemon();
 
 }

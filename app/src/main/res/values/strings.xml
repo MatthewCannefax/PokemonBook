@@ -3,4 +3,5 @@
     <string name="call_api">Call API</string>
     <string name="image_of_the_current_pokemon">image of the current pokemon</string>
     <string name="pokemon_id">Pokemon ID</string>
+    <string name="is_favorite_or_not">is favorite or not</string>
 </resources>

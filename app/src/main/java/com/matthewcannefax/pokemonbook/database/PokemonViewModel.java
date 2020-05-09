@@ -25,9 +25,15 @@ public class PokemonViewModel extends AndroidViewModel {
 
     public void insert(Pokemon pokemon){mRepo.insert(pokemon);}
 
+    public void update(Pokemon pokemon){mRepo.update(pokemon);}
+
     public Pokemon getPokemonById(int id){
         return mRepo.getPokemonById(id);
     }
 
     public void deleteAll(){mRepo.deleteAll();}
+
+    public List<Pokemon> getFavoritePokemon(){
+        return mRepo.getFavorites();
+    }
 }

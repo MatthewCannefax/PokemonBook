@@ -58,6 +58,28 @@ public class Pokemon {
     @JsonProperty("height")
     private Integer height;
 
+    @ColumnInfo(name = "favorite")
+    private boolean favorite;
+
+    @ColumnInfo(name = "generation")
+    private int generation;
+
+    public int getGeneration() {
+        return generation;
+    }
+
+    public void setGeneration(int generation) {
+        this.generation = generation;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
     public String getSpriteUrl() {
         return sprite.getUrl();
     }
@@ -164,6 +186,6 @@ public class Pokemon {
     @NonNull
     @Override
     public String toString() {
-        return name;
+        return String.format("%s %s", id, name);
     }
 }

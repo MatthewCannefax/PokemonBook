@@ -3,6 +3,11 @@ package com.matthewcannefax.pokemonbook.model;
 public class PokemonReference {
     public PokemonReference(){}
 
+    public PokemonReference(int id, String name){
+        this.id = id;
+        setName(name);
+    }
+
     private String name;
 
     private int id;
