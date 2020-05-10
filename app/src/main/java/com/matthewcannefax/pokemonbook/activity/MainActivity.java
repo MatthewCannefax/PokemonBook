@@ -114,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
                     ivPokemonFavorite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_star_empty));
                 }
 
-                mPokemonViewModel.update(currentPokemon);
+                new changeFavorite().execute();
+
             }
         });
 
@@ -191,6 +192,23 @@ public class MainActivity extends AppCompatActivity {
                 ivPokemonFavorite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_star_filled));
             }else{
                 ivPokemonFavorite.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite_star_empty));
+            }
+        }
+    }
+
+    private class changeFavorite extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mPokemonViewModel.update(currentPokemon);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            PokemonGen gen = (PokemonGen) categorySpinner.getSelectedItem();
+            if(gen.getPosition() > 0){
+                new fillComboBox(gen.getPosition()).execute();
             }
         }
     }
